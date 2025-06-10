@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErtixNodes - LXC Container Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login/Register Screen -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1><i class="fas fa-server"></i> ErtixNodes</h1>
+                <p>Personal LXC Container Management</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form active">
+                <h2>Sign In</h2>
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-username">Username or Email</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" id="show-register">Create one</a>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form">
+                <h2>Create Account</h2>
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" required pattern="[a-zA-Z0-9_-]+" 
+                               title="Only letters, numbers, underscore and dash allowed">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required minlength="6">
+                        <small>At least 6 characters</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+                
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" id="show-login">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="main-app" style="display: none;">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1><i class="fas fa-server"></i> ErtixNodes</h1>
+                    <span class="user-info">Welcome, <span id="username-display"></span></span>
+                </div>
+                <div class="header-right">
+                    <button id="logout-btn" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="tab-button" data-tab="container">
+                <i class="fas fa-box"></i> My Container
+            </button>
+            <button class="tab-button" data-tab="console">
+                <i class="fas fa-terminal"></i> Console
+            </button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>My Container</h3>
+                        <p id="container-status">No container created</p>
+                        <div class="card-actions">
+                            <button id="quick-create" class="btn btn-primary" style="display: none;">
+                                <i class="fas fa-plus"></i> Create Container
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Quick Stats</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="dashboard-status" class="stat-value">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">IP Address:</span>
+                                <span id="dashboard-ip" class="stat-value">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Created:</span>
+                                <span id="dashboard-created" class="stat-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Account Info</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Container Limit:</span>
+                                <span class="stat-value">1 container</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Account Type:</span>
+                                <span class="stat-value">Personal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container Tab -->
+        <div id="container" class="tab-content">
+            <div class="section-header">
+                <h2>My Container</h2>
+                <button id="refresh-btn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="container-content">
+                <!-- Container content will be loaded here -->
+            </div>
+
+            <!-- Create Container Form -->
+            <div id="create-container-section" class="create-section">
+                <h3>Create Your Container</h3>
+                <p>You can create one personal container to get started.</p>
+                
+                <form id="create-form" class="create-form">
+                    <div class="form-group">
+                        <label for="container-name">Container Name:</label>
+                        <input type="text" id="container-name" required pattern="[a-zA-Z0-9-]+" 
+                               placeholder="e.g., my-server">
+                        <small>Only letters, numbers, and hyphens allowed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="container-image">Operating System:</label>
+                        <select id="container-image" required>
+                            <option value="">Select an OS...</option>
+                            <option value="ubuntu:22.04">Ubuntu 22.04 LTS</option>
+                            <option value="ubuntu:20.04">Ubuntu 20.04 LTS</option>
+                            <option value="alpine:latest">Alpine Linux (Latest)</option>
+                            <option value="debian:11">Debian 11</option>
+                            <option value="centos:8">CentOS 8</option>
+                            <option value="fedora:latest">Fedora (Latest)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="container-description">Description (Optional):</label>
+                        <textarea id="container-description" rows="3" 
+                                  placeholder="Brief description of your container's purpose"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create My Container
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Console Tab -->
+        <div id="console" class="tab-content">
+            <div class="section-header">
+                <h2>Container Console</h2>
+                <div class="console-controls">
+                    <button id="connect-console" class="btn btn-primary" disabled>
+                        <i class="fas fa-plug"></i> Connect
+                    </button>
+                    <button id="disconnect-console" class="btn btn-danger" disabled>
+                        <i class="fas fa-times"></i> Disconnect
+                    </button>
+                </div>
+            </div>
+            
+            <div class="terminal-container">
+                <div id="terminal"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Modal for confirmations -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure?</p>
+            <div class="modal-buttons">
+                <button id="modal-confirm" class="btn btn-danger">Confirm</button>
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notification-message"></span>
+        <button id="notification-close">&times;</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
